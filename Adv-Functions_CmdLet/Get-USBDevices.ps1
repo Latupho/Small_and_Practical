@@ -5,14 +5,14 @@
 	 Created on:   	27-02-2015 13:49
 	 Created by:   	Daniel Lindegaard
 	 licence:	 	GNU licence - http://www.gnu.org/licenses/licenses.html
-	 Filename:      Get-USBDevices
+	 Filename:      Get-USBDevices.ps1
 	===========================================================================
 	.DESCRIPTION
 		Will get a list of all USB devices on your local computer, or at remote computeres.
 #>
 
 <# Quistions to all
-Q: What is the best and most efficient way to get all USB devices on a computer? Using [GET-WMIOBJECT win32_diskdrive | Where { $_.InterfaceType –eq ‘USB’ }] takes some secunds to get the list.
+Q: What is the best and most efficient way to get all USB devices on a computer? Using [Get-CimInstance win32_diskdrive -ComputerName $Computername | Where-Object { $_.InterfaceType –eq ‘USB’ }] takes some secunds to get the list.
 	A: 
 #>
 
