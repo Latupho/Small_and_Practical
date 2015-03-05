@@ -4,7 +4,8 @@
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2015 v4.2.80
 	 Created on:   	04-03-2015 17:17
 	 Created by:   	Daniel Lindegaard
-	 Licence:	 	GNU licence - http://www.gnu.org/licenses/licenses.html
+	 Source:	https://github.com/Latupho/Small_and_Practical/blob/master/Functions/Function_DriveLetterCheck.ps1
+	 Licence:	GNU licence - http://www.gnu.org/licenses/licenses.html
 	 Filename:     	Function_DriveLetterCheck.ps1
 	===========================================================================
 	.DESCRIPTION
