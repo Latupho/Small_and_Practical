@@ -17,7 +17,7 @@ function DriveLetterCheck ($DriveLetter)
 { 
 	foreach ($Letter in $DriveLetter)
 	{
-		$DriveLetterCheck = Get-PSDrive | Where-Object -FilterScript { $_.Name -eq "$Letter" }
+		$DriveLetterCheck = Get-PSDrive -PSProvider Filesystem | Where-Object -FilterScript { $_.Name -eq "$Letter" }
 		$DriveLetterCheck -eq $null
 	}
 }
