@@ -14,11 +14,17 @@
 #>
 
 function DriveLetterCheck ($DriveLetter)
-{ 
+{
+	$count1 = 1
 	foreach ($Letter in $DriveLetter)
 	{
 		$DriveLetterCheck = Get-PSDrive -PSProvider Filesystem | Where-Object -FilterScript { $_.Name -eq "$Letter" }
-		$DriveLetterCheck -eq $null
+        [PSCustomObject]@{
+            "Exists"       = ($DriveLetterCheck -eq $null);
+            "DriveLetter"  = $Letter;
+            "Count Number" = $count1
+            }
+        $count1++
 	}
 }
 
