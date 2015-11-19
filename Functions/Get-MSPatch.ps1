@@ -72,7 +72,7 @@ function Get-MSPatch ($KB,$Quiet) {
 			elseif ($KBPatch.'Original Source' -eq "Registry Database") {
 				$object = [pscustomobject]@{
 					DisplayName = $KBPatch.DisplayName;
-					KBNumber = $KBPatch.'(default)';
+					KBNumber = (Select-String -Pattern "\((\w{2}\d+)\)" -InputObject ($KBPatch.DisplayName)).Matches.Groups[1];
 					InstalledOn = $KBPatch.InstalledOn;
 					UninstallString = $KBPatch.UninstallString;
 					Description = $KBPatch.Comments;
