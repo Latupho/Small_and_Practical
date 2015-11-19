@@ -1,6 +1,9 @@
 ﻿
 function Get-MSPatch ($KB,$Quiet) {
-    $Quiet = $false
+	#See if the CPU is 64 bit.
+	[boolean]$Is64Bit = [boolean]((Get-WmiObject -Class 'Win32_Processor' | Where-Object { $_.DeviceID -eq 'CPU0' } | Select-Object -ExpandProperty 'AddressWidth') -eq 64)
+	
+	$Quiet = $false
     #$KBs are for when I need to ask WMI(Win32_QuickFixEngineering/Get-hotfix) for the KB's.
     $Count = 0
     $QueryStringAssembly = ""
@@ -12,9 +15,16 @@ function Get-MSPatch ($KB,$Quiet) {
     $WhereString = $KBObjwStart -join " -or "
     $FilterScript = [scriptblock]::Create( $WhereString )
 
-    #Search the Reg.
-    $Reg = @("HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*")
-    $InstalledApps = Get-ItemProperty $Reg -EA 0
+    #Search the Reg.	
+	if ($is64bit)
+	{
+		$Reg = @("HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*")
+	}
+	else
+	{
+		$Reg = @("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*")
+	}
+	$InstalledApps = Get-ItemProperty $Reg -EA 0
     $Run = 0
 
     $OfficeKBs = $InstalledApps |
