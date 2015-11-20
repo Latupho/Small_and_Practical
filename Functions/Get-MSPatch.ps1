@@ -1,4 +1,18 @@
-﻿
+﻿<#	
+	.NOTES
+	===========================================================================
+	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2015 v4.2.97
+	 Created on:   	19-11-2015 09:42
+	 Created by:   	 Daniel Lindegaard
+	 Organization: 	 
+	 Filename:     	Get-MSPatch
+	===========================================================================
+	.DESCRIPTION
+		As of what I know and have researched, this will get all the Patches from
+		Microsoft on your computer. But as MS don't allways follow there own standarts,
+		I can be wrong on this part :-)
+#>
+
 function Get-MSPatch ($KB,$Quiet) {
 	#See if the CPU is 64 bit.
 	[boolean]$Is64Bit = [boolean]((Get-WmiObject -Class 'Win32_Processor' | Where-Object { $_.DeviceID -eq 'CPU0' } | Select-Object -ExpandProperty 'AddressWidth') -eq 64)
