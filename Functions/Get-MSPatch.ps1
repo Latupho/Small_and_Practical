@@ -17,7 +17,6 @@ function Get-MSPatch ($KB,$Quiet) {
 	#See if the CPU is 64 bit.
 	[boolean]$Is64Bit = [boolean]((Get-WmiObject -Class 'Win32_Processor' | Where-Object { $_.DeviceID -eq 'CPU0' } | Select-Object -ExpandProperty 'AddressWidth') -eq 64)
 	
-	$Quiet = $false
     #$KBs are for when I need to ask WMI(Win32_QuickFixEngineering/Get-hotfix) for the KB's.
     $Count = 0
     $QueryStringAssembly = ""
