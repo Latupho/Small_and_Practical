@@ -12,4 +12,5 @@ A Function (In time a cmdlet to) that can remove them. Both by the shell and can
 A Cmdlet that easy logs you of Microsoft Office 365, Enable-Office365.
 
 List of jobs that runs in the background:
-I can't write about this, yet as thies atm, are company. WIll work on a way to genelice it.
+I can't write about this, yet, as thies, atm, are company sensitive. Will work on a way to genelice it.
+
