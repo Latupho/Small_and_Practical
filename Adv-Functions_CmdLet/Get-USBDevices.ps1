@@ -4,7 +4,7 @@
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2015 v4.2.80
 	 Created on:   	27-02-2015 13:49
 	 Created by:   	Daniel Lindegaard
-	 licence:	 	GNU licence - http://www.gnu.org/licenses/licenses.html
+	 Licence:	 	GNU licence - http://www.gnu.org/licenses/licenses.html
 	 Filename:      Get-USBDevices.ps1
 	===========================================================================
 	.DESCRIPTION
