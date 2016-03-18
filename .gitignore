@@ -1,3 +1,7 @@
 *.TempPoint.ps1
 *.RestorePoint.ps1
+<<<<<<< HEAD
 *LocalTest.Config
+=======
+*_LocalTest.Config
+>>>>>>> origin/master
