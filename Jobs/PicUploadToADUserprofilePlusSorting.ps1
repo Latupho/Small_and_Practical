@@ -35,7 +35,7 @@
 #>
 #region ConfigInformation
 
-$PathToPictures = "$env:ProgramData\Pictures"
+$PathToPictures = "$env:ProgramData\Pictures\DLI_96x96 (0007O7).png"
 $ConfigFile = "$env:ProgramData\PicUploadToADUserprofilePlusSorting\Config.xml"
 
 #endregion
@@ -43,11 +43,12 @@ $ConfigFile = "$env:ProgramData\PicUploadToADUserprofilePlusSorting\Config.xml"
 ## Don't edit below, no need. Edit the variables in ConfigInformation
 #region Default Config file
 
-$ConfigHashTable = @{
+[Hashtable]$ConfigHashTable = @{
 	PathToPictures = $PathToPictures;
-	Property2 = "Value2";
+	MaxPixSizeHight = "96";
+	MaxPixSizewide = "96";
+	MaxPixFileSizeKB = "10";
 }
-$ConfigHashTable
 
 #endregion
 
@@ -66,6 +67,7 @@ $ConfigHashTable
 
 function SortingImagesByPixSize ($Path, $parameter2) {
 	$FilesMetadata = Get-FileMetaData -folder (Get-childitem $path -Recurse -Directory).FullName
+	
 }
 
 function FilenameStandartCheck ($parameter1, $parameter2)
@@ -76,39 +78,34 @@ function FilenameStandartCheck ($parameter1, $parameter2)
 function UploadImageToADUser ($Username, $PhotoPath)
 {
 	$FPhoto = [byte[]](Get-Content "$PhotoPath" -Encoding byte)
-	Set-ADUser "$Username" -Replace @{ thumbnailPhoto = $FPhoto }
+	#Will need to remove this(Below line -Credential (Get-Credential)) when all is done.
+	Set-ADUser "$Username" -Replace @{ thumbnailPhoto = $FPhoto } -Credential (Get-Credential)
 }
+
+
 
 #endregion
 
 #region Controller
 
-BEGIN
-{
-	# Try one or more commands
-	try
-	{
-		$FilesMetadata = Get-FileMetaData -folder (Get-childitem $path -Recurse -Directory).FullName
-	}
-	# Catch specific types of exceptions thrown by one of those commands
-	catch [System.IO.IOException] {
-	}
-	# Catch all other exceptions thrown by one of those commands
-	catch
-	{
-	}
-	# Execute these commands even if there is an exception thrown from the try block
-	finally
-	{
-	}
+<#
+	For more information on the try, catch and finally keywords, see:
+		Get-Help about_try_catch_finally
+#>
+
+# Try one or more commands
+try {
+	$FilesMetadata = Get-FileMetaData -folder (Get-childitem $path -Recurse -Directory).FullName
+	UploadImageToADUser -Username "dli" -PhotoPath $ConfigHashTable.PathToPictures
 }
-PROCESS
-{
-     
+# Catch specific types of exceptions thrown by one of those commands
+catch [System.IO.IOException] {
 }
-END
-{
-	
+# Catch all other exceptions thrown by one of those commands
+catch {
+}
+# Execute these commands even if there is an exception thrown from the try block
+finally {
 }
 
 #endregion
