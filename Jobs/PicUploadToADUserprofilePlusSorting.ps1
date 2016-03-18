@@ -10,26 +10,28 @@
 	.DESCRIPTION
 		This job wil do the followig as it's ordered below.
 	
-	-[Function] Config File
+	-- [Function] Config File
 		- If no Config File Create a default one, at "ProgramData - C:\ProgramData\PicUploadToADUserprofilePlusSorting\"
 		- Import Config file to memory.
-	-[Function] Check to see if the file name standart is currect.
-		- Ex on image standart, [Username]_[ImageSizePixelxPixel].jpg, ex. scr_800x768.jpg
-	- Sort(copy the files) all the images in to folders that is named, by image pixel size, Ex. 1024x768
-	- [Function] Image_check_PreAD_Upload. Will need to check if the files meet the requirement for the image, before it's uploaded to AD.
+	-- [Function] Check to see if the file name standart is currect.
+		- Ex. on image standart, [Username]_[ImageSizePixelxPixel].jpg, ex. scr_800x768.jpg
+	-- [Function] Image_check_PreAD_Upload. Will need to check if the files meet the requirement for the image, before it's uploaded to AD.
 		- Check ok:			Copy the Image to "Ready for upload"
 		- Check not ok:
 			- Are all okey but file size, Compress the image to the currect file size. (Nice to have, need some .Net for this)
 			- Are other then the file size not okey, move to "Need review" AND send a mail to Servicesdesk@mth.dk with a message
 			  here about, and say it's att Jonas @ Rapro.
-	- [Function] Uploac the image to the profile.
+	-- [Function] Uploac the image to the profile.
 		- Match the image in "Ready for upload" to the urrect user in AD.
 			- If no match, send mail to IT-Operation, about the issue.
 		- Check if the User allready have a image.
 		- If the user allready have a image in "uploaded images", Copy the old Image to a "Old Image folder"
 		- Copy to "Ready for upload"
-	- Image_check_PostAD_Upload:
+	-- Image_check_PostAD_Upload:
 		- 
+
+## Can't see any value in this step, taking it out. The soring of Images, will happen in the filtering under "[Function] Image_check_PreAD_Upload".
+	- Sort(copy the files) all the images in to folders that is named, by image pixel size, Ex. 1024x768
 #>
 #region ConfigInformation
 
