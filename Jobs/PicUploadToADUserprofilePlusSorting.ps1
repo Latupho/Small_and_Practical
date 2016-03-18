@@ -59,8 +59,10 @@ $ConfigHashTable
 
 #region Functions
 
-#Dot Sourcing, the function.
-.\..\Adv-Functions_CmdLet\Get-FileMetaDataReturnObject.ps1
+###Dot Sourcing, the function Get-FileMetaDataReturnObject.ps1.
+#. .\Get-FileMetaDataReturnObject.ps1
+###This below is here for me to test, change path to what fit your config, or as showend as above.
+. ("$(Get-Content -Path ".\Work_LocalTest.Config")\Get-FileMetaDataReturnObject.ps1")
 
 function SortingImagesByPixSize ($Path, $parameter2) {
 	$FilesMetadata = Get-FileMetaData -folder (Get-childitem $path -Recurse -Directory).FullName
@@ -69,6 +71,12 @@ function SortingImagesByPixSize ($Path, $parameter2) {
 function FilenameStandartCheck ($parameter1, $parameter2)
 {
 	
+}
+
+function UploadImageToADUser ($Username, $PhotoPath)
+{
+	$FPhoto = [byte[]](Get-Content "$PhotoPath" -Encoding byte)
+	Set-ADUser "$Username" -Replace @{ thumbnailPhoto = $FPhoto }
 }
 
 #endregion
