@@ -35,7 +35,7 @@
 #>
 #region ConfigInformation
 
-$PathToPictures = "$env:ProgramData\Pictures\DLI_96x96 (0007O7).png"
+$PathToPictures = "$env:ProgramData\Pictures\To PNG"
 $ConfigFile = "$env:ProgramData\PicUploadToADUserprofilePlusSorting\Config.xml"
 
 #endregion
@@ -79,24 +79,67 @@ function UploadImageToADUser ($Username, $PhotoPath)
 {
 	$FPhoto = [byte[]](Get-Content "$PhotoPath" -Encoding byte)
 	#Will need to remove this(Below line -Credential (Get-Credential)) when all is done.
-	Set-ADUser "$Username" -Replace @{ thumbnailPhoto = $FPhoto } -Credential (Get-Credential)
+	Set-ADUser "$Username" -Replace @{ thumbnailPhoto = $FPhoto } -Verbose -WhatIf
 }
-
-
 
 #endregion
 
 #region Controller
 
-<#
-	For more information on the try, catch and finally keywords, see:
-		Get-Help about_try_catch_finally
-#>
+try
+{
+	Get-FileMetaData -folder $($ConfigHashTable.PathToPictures) |
+	ForEach-Object -Process {
+        if ($_.Type -ne 'File folder') {
+		        [System.String]$RegEx 		= '\d{1,}'
+		        [System.String]$RegExNmae_ 	= '(\w{1,})_'
+		        [System.String]$RegExNmaeAT = '(\w{1,})@'
+		        [System.string]$SizeString 	= $_.Size
+		
+	
+		        [System.Int16]$FileSize2Dic = Select-String -Pattern $RegEx -AllMatches -InputObject $SizeString |
+									          Select-Object -ExpandProperty Matches |
+									          Select-Object -ExpandProperty Value -First 1
 
-# Try one or more commands
-try {
-	$FilesMetadata = Get-FileMetaData -folder (Get-childitem $path -Recurse -Directory).FullName
-	UploadImageToADUser -Username "dli" -PhotoPath $ConfigHashTable.PathToPictures
+		        if (($FileSize2Dic -le $($ConfigHashTable.MaxPixFileSizeKB))) {
+
+		            #Write-Verbose -Message "Name $($_.name)" -Verbose
+
+                    $Widthpixels =  Select-String -Pattern $RegEx -AllMatches -InputObject $_.Width |
+					                Select-Object -ExpandProperty Matches
+		
+		            $Heightpixels = Select-String -Pattern $RegEx -AllMatches -InputObject $_.Height |
+						            Select-Object -ExpandProperty Matches
+
+		            if ($_.name -like "*@*")
+		            {
+			            $Username = (Select-String -Pattern $RegExNmaeAT -AllMatches -InputObject $_.Name |
+			            Select-Object -ExpandProperty Matches).Groups[1].Value
+		            }
+		            Else
+		            {
+			            $Username = (Select-String -Pattern $RegExNmae_ -AllMatches -InputObject $_.Name |
+			            Select-Object -ExpandProperty Matches).Groups[1].Value
+		            }
+		
+		            [int16]$Width = $Widthpixels.Value
+		            [int16]$Heigh = $Heightpixels.Value
+
+		            if (($Width -le $($ConfigHashTable.MaxPixSizewide)) -and ($Heigh -le $($ConfigHashTable.MaxPixSizeHight)))
+		            {
+			            $Username
+                        UploadImageToADUser -Username $Username -PhotoPath $_.Path
+		            }
+		            else
+		            {
+			            Write-Output "Not ok - $($_.name)"
+		            }
+		        }
+                else {
+                    #Write-Verbose -Message "Filesize $($_.Size)" -Verbose
+                }
+	        }
+        }
 }
 # Catch specific types of exceptions thrown by one of those commands
 catch [System.IO.IOException] {
