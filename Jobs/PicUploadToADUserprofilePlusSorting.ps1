@@ -77,9 +77,53 @@ function FilenameStandartCheck ($parameter1, $parameter2)
 
 function UploadImageToADUser ($Username, $PhotoPath)
 {
-	$FPhoto = [byte[]](Get-Content "$PhotoPath" -Encoding byte)
+	$FPhoto = [byte[]](Get-Content $PhotoPath -Encoding byte)
 	#Will need to remove this(Below line -Credential (Get-Credential)) when all is done.
-	Set-ADUser "$Username" -Replace @{ thumbnailPhoto = $FPhoto } -Verbose -WhatIf
+	
+	$DestinationPathUserNotInAD = $($((Get-Item -Path $PhotoPath).DirectoryName) + "\UserNotInAD\")
+	$DestinationPathUserImageUploaded = $($((Get-Item -Path $PhotoPath).DirectoryName) + "\UserImageUploaded\")
+	
+#region Destination Path Check
+	# THis Cheks if the DestinationPath is there, if not, then it will create it.
+	if (Test-Path -Path $DestinationPathUserNotInAD)
+	{}
+	Else
+	{
+		New-Item -Path $DestinationPathUserNotInAD -ItemType Directory -Verbose
+	}
+	
+	if (Test-Path -Path $DestinationPathUserImageUploaded)
+	{ }
+	Else
+	{
+		New-Item -Path $DestinationPathUserImageUploaded -ItemType Directory -Verbose
+	}
+#endregion
+	
+	if ((Get-ADUser -Filter { Name -eq $username }))
+	{
+		Set-ADUser $Username -Replace @{ thumbnailPhoto = $FPhoto } -WhatIf -Verbose
+		Move-Item -Path $PhotoPath -Destination $DestinationPathUserImageUploaded -Force -Verbose
+	}
+	else
+	{
+		Move-Item -Path $PhotoPath -Destination $DestinationPathUserNotInAD -Force -Verbose
+	}
+}
+
+function WidthAndHeightPixelsCheck ($Pattern) {
+	$Widthpixels = Select-String -Pattern $Pattern -AllMatches -InputObject $_.Width |
+	Select-Object -ExpandProperty Matches
+	
+	$Heightpixels = Select-String -Pattern $Pattern -AllMatches -InputObject $_.Height |
+	Select-Object -ExpandProperty Matches
+	
+	[int16]$Width = $Widthpixels.Value
+	[int16]$Heigh = $Heightpixels.Value
+	
+	[System.Boolean]$Result = ($Width -le $($ConfigHashTable.MaxPixSizewide)) -and ($Heigh -le $($ConfigHashTable.MaxPixSizeHight))
+	
+	Write-Output $Result
 }
 
 #endregion
@@ -102,15 +146,6 @@ try
 									          Select-Object -ExpandProperty Value -First 1
 
 		        if (($FileSize2Dic -le $($ConfigHashTable.MaxPixFileSizeKB))) {
-
-		            #Write-Verbose -Message "Name $($_.name)" -Verbose
-
-                    $Widthpixels =  Select-String -Pattern $RegEx -AllMatches -InputObject $_.Width |
-					                Select-Object -ExpandProperty Matches
-		
-		            $Heightpixels = Select-String -Pattern $RegEx -AllMatches -InputObject $_.Height |
-						            Select-Object -ExpandProperty Matches
-
 		            if ($_.name -like "*@*")
 		            {
 			            $Username = (Select-String -Pattern $RegExNmaeAT -AllMatches -InputObject $_.Name |
@@ -122,10 +157,7 @@ try
 			            Select-Object -ExpandProperty Matches).Groups[1].Value
 		            }
 		
-		            [int16]$Width = $Widthpixels.Value
-		            [int16]$Heigh = $Heightpixels.Value
-
-		            if (($Width -le $($ConfigHashTable.MaxPixSizewide)) -and ($Heigh -le $($ConfigHashTable.MaxPixSizeHight)))
+		            if (WidthAndHeightPixelsCheck -Pattern $RegEx)
 		            {
 			            $Username
                         UploadImageToADUser -Username $Username -PhotoPath $_.Path
