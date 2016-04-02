@@ -21,7 +21,7 @@
 			- Are all okey but file size, Compress the image to the currect file size. (Nice to have, need some .Net for this)
 			- Are other then the file size not okey, move to "Need review" AND send a mail to Servicesdesk@mth.dk with a message
 			  here about, and say it's att Jonas @ Rapro.
-	-- [Function] Uploac the image to the profile.
+	-- [Function] Upload the image to the profile.
 		- Match the image in "Ready for upload" to the urrect user in AD.
 			- If no match, send mail to IT-Operation, about the issue.
 		- Check if the User allready have a image.
@@ -64,6 +64,7 @@ $ConfigFile = "$env:ProgramData\PicUploadToADUserprofilePlusSorting\Config.xml"
 #. .\Get-FileMetaDataReturnObject.ps1
 ###This below is here for me to test, change path to what fit your config, or as showend as above.
 . ("$(Get-Content -Path ".\Work_LocalTest.Config")\Get-FileMetaDataReturnObject.ps1")
+. (.\..\Adv-Functions_CmdLet\Convert-JPGtoPNG.ps1)
 
 function SortingImagesByPixSize ($Path, $parameter2) {
 	$FilesMetadata = Get-FileMetaData -folder (Get-childitem $path -Recurse -Directory).FullName
@@ -84,14 +85,14 @@ function UploadImageToADUser ($Username, $PhotoPath)
 	$DestinationPathUserImageUploaded = $($((Get-Item -Path $PhotoPath).DirectoryName) + "\UserImageUploaded\")
 	
 #region Destination Path Check
-	# THis Cheks if the DestinationPath is there, if not, then it will create it.
+	# This cheks if the $DestinationPathUserNotInAD is there, if not, then it will create it.
 	if (Test-Path -Path $DestinationPathUserNotInAD)
 	{}
 	Else
 	{
 		New-Item -Path $DestinationPathUserNotInAD -ItemType Directory -Verbose
 	}
-	
+	# This cheks if the $DestinationPathUserImageUploaded is there, if not, then it will create it.	
 	if (Test-Path -Path $DestinationPathUserImageUploaded)
 	{ }
 	Else
