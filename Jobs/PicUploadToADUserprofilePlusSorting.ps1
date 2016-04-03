@@ -35,7 +35,7 @@
 #>
 #region ConfigInformation
 
-$PathToPictures = "$env:ProgramData\Pictures\To PNG"
+$PathToPictures = "$env:ProgramData\Pictures"
 $ConfigFile = "$env:ProgramData\PicUploadToADUserprofilePlusSorting\Config.xml"
 
 #endregion
@@ -44,7 +44,8 @@ $ConfigFile = "$env:ProgramData\PicUploadToADUserprofilePlusSorting\Config.xml"
 #region Default Config file
 
 [Hashtable]$ConfigHashTable = @{
-	PathToPictures = $PathToPictures;
+	PathToJPGPictures = $PathToPictures
+	PathToPNGPictures = "$PathToPictures\To PNG";
 	MaxPixSizeHight = "96";
 	MaxPixSizewide = "96";
 	MaxPixFileSizeKB = "10";
@@ -62,9 +63,12 @@ $ConfigFile = "$env:ProgramData\PicUploadToADUserprofilePlusSorting\Config.xml"
 
 ###Dot Sourcing, the function Get-FileMetaDataReturnObject.ps1.
 #. .\Get-FileMetaDataReturnObject.ps1
+# Or
+# (Get-ChildItem -Path ".\..\Adv-Functions_CmdLet\Get-FileMetaDataReturnObject.ps1").fullname
 ###This below is here for me to test, change path to what fit your config, or as showend as above.
 . ("$(Get-Content -Path ".\Work_LocalTest.Config")\Get-FileMetaDataReturnObject.ps1")
-. (.\..\Adv-Functions_CmdLet\Convert-JPGtoPNG.ps1)
+
+. (Get-ChildItem -Path ".\..\Adv-Functions_CmdLet\Convert-JPGtoPNG.ps1").fullname
 
 function SortingImagesByPixSize ($Path, $parameter2) {
 	$FilesMetadata = Get-FileMetaData -folder (Get-childitem $path -Recurse -Directory).FullName
@@ -131,9 +135,37 @@ function WidthAndHeightPixelsCheck ($Pattern) {
 
 #region Controller
 
+try {
+	if (Test-Path -Path $($ConfigHashTable.PathToPNGPictures))
+	{ }
+	Else
+	{
+		New-Item -Path $($ConfigHashTable.PathToPNGPictures) -ItemType Directory -Verbose
+		
+		#This Start-sleep is here, as sometimes, I DONT'T know why, it will create a file, and not a folder?
+		#This this little delay, it create a folder, and then move the files over in it.
+		Start-Sleep -Milliseconds 200
+	}
+	
+	Get-ChildItem -path $($ConfigHashTable.PathToJPGPictures) -Filter "*.jpg" -File |
+	Foreach-Object -Process {
+		$newName = $_.FullName.Substring(0, $_.FullName.Length - 4) + "_resized.png"
+		Convert-JPGtoPNG -imageSource $_.FullName -imageTarget $newName -quality 80 -canvasWidth 96 -canvasHeight 96
+		
+		move-Item -Path $newName -Destination $($ConfigHashTable.PathToPNGPictures) -Verbose -Force -ErrorAction Stop
+	}
+}
+
+# Catch all other exceptions thrown by one of those commands
+catch {
+}
+# Execute these commands even if there is an exception thrown from the try block
+finally {
+}
+
 try
 {
-	Get-FileMetaData -folder $($ConfigHashTable.PathToPictures) |
+	Get-FileMetaData -folder $($ConfigHashTable.PathToPNGPictures) |
 	ForEach-Object -Process {
         if ($_.Type -ne 'File folder') {
 		        [System.String]$RegEx 		= '\d{1,}'
