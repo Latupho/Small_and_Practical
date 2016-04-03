@@ -43,6 +43,10 @@
 	Else
 	{
 		New-Item -Path $DestinationPNGPath -ItemType Directory -Verbose
+        		
+		#This Start-sleep is here, as sometimes, I DONT'T know why, it will create a file, and not a folder?
+		#This this little delay, it create a folder, and then move the files over in it.
+		Start-Sleep -Milliseconds 200
 	}
 
     Get-ChildItem -path $PathToPictures -Filter "*.jpg" -File |
