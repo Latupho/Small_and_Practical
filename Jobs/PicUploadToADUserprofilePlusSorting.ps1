@@ -46,6 +46,7 @@ $ConfigFile = "$env:ProgramData\PicUploadToADUserprofilePlusSorting\Config.xml"
 [Hashtable]$ConfigHashTable = @{
 	PathToJPGPictures = $PathToPictures
 	PathToPNGPictures = "$PathToPictures\To PNG";
+	PathToJPGPicturesArchive = "$PathToPictures\Processed JPG files";
 	MaxPixSizeHight = "96";
 	MaxPixSizewide = "96";
 	MaxPixFileSizeKB = "10";
@@ -69,6 +70,12 @@ $ConfigFile = "$env:ProgramData\PicUploadToADUserprofilePlusSorting\Config.xml"
 . ("$(Get-Content -Path ".\Work_LocalTest.Config")\Get-FileMetaDataReturnObject.ps1")
 
 . (Get-ChildItem -Path ".\..\Adv-Functions_CmdLet\Convert-JPGtoPNG.ps1").fullname
+
+<#
+For when the job is being deployed.
+. .\Get-FileMetaDataReturnObject.ps1
+. .\Convert-JPGtoPNG.ps1
+#>
 
 function SortingImagesByPixSize ($Path, $parameter2) {
 	$FilesMetadata = Get-FileMetaData -folder (Get-childitem $path -Recurse -Directory).FullName
@@ -129,6 +136,19 @@ function WidthAndHeightPixelsCheck ($Pattern) {
 	[System.Boolean]$Result = ($Width -le $($ConfigHashTable.MaxPixSizewide)) -and ($Heigh -le $($ConfigHashTable.MaxPixSizeHight))
 	
 	Write-Output $Result
+}
+
+function JPGPicturesToArchive ($Path, $Destination) {
+	if (Test-Path -Path $Path)
+	{ }
+	Else
+	{
+		New-Item -Path $Destination -ItemType Directory -Verbose
+		
+		#This Start-sleep is here, as sometimes, I DONT'T know why, it will create a file, and not a folder?
+		#This this little delay, it create a folder, and then move the files over in it.
+		Start-Sleep -Milliseconds 200
+	}
 }
 
 #endregion
@@ -203,8 +223,9 @@ try
                 else {
                     #Write-Verbose -Message "Filesize $($_.Size)" -Verbose
                 }
-	        }
-        }
+		}
+		JPGPicturesToArchive -Path $_.fullname -Destination $($ConfigHashTable.PathToJPGPicturesArchive)
+	}
 }
 # Catch specific types of exceptions thrown by one of those commands
 catch [System.IO.IOException] {
