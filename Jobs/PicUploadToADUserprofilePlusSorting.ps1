@@ -33,6 +33,9 @@
 ## Can't see any value in this step, taking it out. The soring of Images, will happen in the filtering under "[Function] Image_check_PreAD_Upload".
 	- Sort(copy the files) all the images in to folders that is named, by image pixel size, Ex. 1024x768
 #>
+Try { Set-ExecutionPolicy -ExecutionPolicy 'ByPass' -Scope 'Process' -Force -ErrorAction 'Stop' }
+Catch { }
+
 #region ConfigInformation
 
 $PathToPictures = "$env:ProgramData\Pictures"
