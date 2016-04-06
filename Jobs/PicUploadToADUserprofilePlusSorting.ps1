@@ -139,7 +139,7 @@ function WidthAndHeightPixelsCheck ($Pattern) {
 }
 
 function JPGPicturesToArchive ($Path, $Destination) {
-	if (Test-Path -Path $Path)
+	if (Test-Path -Path $Destination)
 	{ }
 	Else
 	{
@@ -147,8 +147,9 @@ function JPGPicturesToArchive ($Path, $Destination) {
 		
 		#This Start-sleep is here, as sometimes, I DONT'T know why, it will create a file, and not a folder?
 		#This this little delay, it create a folder, and then move the files over in it.
-		Start-Sleep -Milliseconds 200
+		Start-Sleep -Milliseconds 500
 	}
+	Move-Item -Path $Path -Destination $Destination -Force -Verbose
 }
 
 #endregion
@@ -173,6 +174,8 @@ try {
 		Convert-JPGtoPNG -imageSource $_.FullName -imageTarget $newName -quality 80 -canvasWidth 96 -canvasHeight 96
 		
 		move-Item -Path $newName -Destination $($ConfigHashTable.PathToPNGPictures) -Verbose -Force -ErrorAction Stop
+		
+		JPGPicturesToArchive -Path $_.fullname -Destination $($ConfigHashTable.PathToJPGPicturesArchive)
 	}
 }
 
@@ -224,7 +227,6 @@ try
                     #Write-Verbose -Message "Filesize $($_.Size)" -Verbose
                 }
 		}
-		JPGPicturesToArchive -Path $_.fullname -Destination $($ConfigHashTable.PathToJPGPicturesArchive)
 	}
 }
 # Catch specific types of exceptions thrown by one of those commands
