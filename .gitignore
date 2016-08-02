@@ -6,3 +6,6 @@
 =======
 *_LocalTest.Config
 >>>>>>> origin/master
+*.NoUpload.ps1
+*.NoUpload.ps2
+*.NoUpload.ps3
