@@ -111,14 +111,15 @@ function Get-UserORComputerlastlogon {
 			{
 				foreach ($DC in $DCs)
 				{
-					$User = get-aduser -Identity $Name -properties lastLogon -server $($dc.name) |
-					Select-Object -Property name, lastlogon -ErrorAction Stop
+					$User = get-aduser -Identity $Name -properties lastLogon ,PasswordLastSet -server $($dc.name) |
+					Select-Object -Property name, lastlogon , PasswordLastSet -ErrorAction Stop
 					
 					$Obj = [PSCustomObject]@{
 						"Domain Controller" = $($dc.name);
 						"Username" = $User.name;
 						"Lastlogon" = try { $(Get-Date $($User.lastlogon) -ErrorAction Stop) }
-									  catch { [datetime]::MinValue }
+									  catch { [datetime]::MinValue };
+                        "PasswordLastSet" = $User.PasswordLastSet
 					}
 					Write-Output $Obj
 				}
