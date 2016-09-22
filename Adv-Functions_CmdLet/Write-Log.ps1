@@ -123,7 +123,20 @@ function Write-Log
 		}
 		
 		# Write log entry to $Path 
-		"$FormattedDate $LevelText $Message" | Out-File -FilePath $Path -Append
+		
+        if ($Path -match '\[|\]')
+		{
+            $FileInfo = Get-ItemProperty -LiteralPath $Path
+
+			$null = New-PSDrive -Name TempDrive -PSProvider FileSystem -Root $($FileInfo.Directoryname)
+			"$FormattedDate $LevelText $Message" | Out-File -FilePath TempDrive:\$($FileInfo.name) -Append
+		}
+		else
+		{
+			"$FormattedDate $LevelText $Message" | Out-File -FilePath $Path -Append
+		}
+		
+		
 	}
 	End
 	{
