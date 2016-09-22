@@ -84,14 +84,14 @@ function Write-Log
 	{
 		
 		# If the file already exists and NoClobber was specified, do not write to the log. 
-		if ((Test-Path $Path) -AND $NoClobber)
+		if ((Test-Path -LiteralPath $Path) -AND $NoClobber)
 		{
 			Write-Error "Log file $Path already exists, and you specified NoClobber. Either delete the file or specify a different name."
 			Return
 		}
 		
 		# If attempting to write to a log file in a folder/path that doesn't exist create the file including the path. 
-		elseif (!(Test-Path $Path))
+		elseif (!(Test-Path -LiteralPath $Path))
 		{
 			Write-Verbose "Creating $Path."
 			$NewLogFile = New-Item $Path -Force -ItemType File
