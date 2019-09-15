@@ -1,8 +1,8 @@
 *.TempPoint.ps1
 *.RestorePoint.ps1
 *.psbuild
-<<<<<<< HEAD
-*LocalTest.Config
+Toolbox.code-workspace
+
 =======
 *_LocalTest.Config
 >>>>>>> origin/master
